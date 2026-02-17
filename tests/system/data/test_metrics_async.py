@@ -269,6 +269,10 @@ class TestMetricsAsync(SystemTestRunner):
         )
         assert attempt.application_blocking_time_ns == 0
 
+    @pytest.mark.skipif(
+        bool(os.environ.get(BIGTABLE_EMULATOR)),
+        reason="emulator doesn't suport cluster_config",
+    )
     @CrossSync.pytest
     async def test_mutate_row_failure_with_retries(
         self, table, handler, error_injector
@@ -595,6 +599,10 @@ class TestMetricsAsync(SystemTestRunner):
         assert attempt.end_status.name == "DEADLINE_EXCEEDED"
         assert attempt.gfe_latency_ns is None
 
+    @pytest.mark.skipif(
+        bool(os.environ.get(BIGTABLE_EMULATOR)),
+        reason="emulator doesn't suport cluster_config",
+    )
     @CrossSync.pytest
     async def test_sample_row_keys_failure_mid_stream(
         self, table, temp_rows, handler, error_injector
