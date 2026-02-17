@@ -27,6 +27,7 @@ from google.cloud.bigtable.data._metrics.data_model import (
     CompletedAttemptMetric,
 )
 from google.cloud.bigtable_v2.types import ResponseParams
+from google.cloud.environment_vars import BIGTABLE_EMULATOR
 from google.cloud.bigtable.data._cross_sync import CrossSync
 from . import TEST_FAMILY, SystemTestRunner
 from grpc import UnaryUnaryClientInterceptor
@@ -183,6 +184,10 @@ class TestMetrics(SystemTestRunner):
             table._metrics.add_handler(handler)
             yield table
 
+    @pytest.mark.skipif(
+        bool(os.environ.get(BIGTABLE_EMULATOR)),
+        reason="emulator doesn't suport cluster_config",
+    )
     def test_mutate_row(self, table, temp_rows, handler, cluster_config):
         row_key = b"mutate"
         new_value = uuid.uuid4().hex.encode()
@@ -258,6 +263,9 @@ class TestMetrics(SystemTestRunner):
         assert final_attempt.end_status.name == "PERMISSION_DENIED"
         assert final_attempt.gfe_latency_ns is None
 
+    @pytest.mark.skipif(
+        bool(os.environ.get(BIGTABLE_EMULATOR)), reason="not supported by emulator"
+    )
     def test_mutate_row_failure_timeout(self, table, temp_rows, handler):
         """Test failure in gapic layer by passing very low timeout
 
@@ -283,6 +291,10 @@ class TestMetrics(SystemTestRunner):
         assert attempt.end_status.name == "DEADLINE_EXCEEDED"
         assert attempt.gfe_latency_ns is None
 
+    @pytest.mark.skipif(
+        bool(os.environ.get(BIGTABLE_EMULATOR)),
+        reason="emulator doesn't suport cluster_config",
+    )
     def test_mutate_row_failure_unauthorized(
         self, handler, authorized_view, cluster_config
     ):
@@ -315,6 +327,10 @@ class TestMetrics(SystemTestRunner):
             and attempt.gfe_latency_ns < operation.duration_ns
         )
 
+    @pytest.mark.skipif(
+        bool(os.environ.get(BIGTABLE_EMULATOR)),
+        reason="emulator doesn't suport cluster_config",
+    )
     def test_mutate_row_failure_unauthorized_with_retries(
         self, handler, authorized_view, cluster_config
     ):
@@ -347,6 +363,10 @@ class TestMetrics(SystemTestRunner):
         for attempt in handler.completed_attempts:
             assert attempt.end_status.name in ["PERMISSION_DENIED", "DEADLINE_EXCEEDED"]
 
+    @pytest.mark.skipif(
+        bool(os.environ.get(BIGTABLE_EMULATOR)),
+        reason="emulator doesn't suport cluster_config",
+    )
     def test_sample_row_keys(self, table, temp_rows, handler, cluster_config):
         table.sample_row_keys()
         assert len(handler.completed_operations) == 1
@@ -376,6 +396,10 @@ class TestMetrics(SystemTestRunner):
         )
         assert attempt.application_blocking_time_ns == 0
 
+    @pytest.mark.skipif(
+        bool(os.environ.get(BIGTABLE_EMULATOR)),
+        reason="emulator doesn't suport cluster_config",
+    )
     def test_sample_row_keys_failure_with_retries(
         self, table, temp_rows, handler, error_injector, cluster_config
     ):
@@ -412,6 +436,9 @@ class TestMetrics(SystemTestRunner):
             and final_attempt.gfe_latency_ns < operation.duration_ns
         )
 
+    @pytest.mark.skipif(
+        bool(os.environ.get(BIGTABLE_EMULATOR)), reason="not supported by emulator"
+    )
     def test_sample_row_keys_failure_timeout(self, table, handler):
         """Test failure in gapic layer by passing very low timeout
 
@@ -454,6 +481,10 @@ class TestMetrics(SystemTestRunner):
         final_attempt = handler.completed_attempts[-1]
         assert final_attempt.end_status.name == "PERMISSION_DENIED"
 
+    @pytest.mark.skipif(
+        bool(os.environ.get(BIGTABLE_EMULATOR)),
+        reason="emulator doesn't suport cluster_config",
+    )
     def test_read_modify_write(self, table, temp_rows, handler, cluster_config):
         from google.cloud.bigtable.data.read_modify_write_rules import IncrementRule
 
@@ -490,6 +521,9 @@ class TestMetrics(SystemTestRunner):
         )
         assert attempt.application_blocking_time_ns == 0
 
+    @pytest.mark.skipif(
+        bool(os.environ.get(BIGTABLE_EMULATOR)), reason="not supported by emulator"
+    )
     def test_read_modify_write_failure_timeout(self, table, temp_rows, handler):
         """Test failure in gapic layer by passing very low timeout
 
@@ -514,6 +548,9 @@ class TestMetrics(SystemTestRunner):
         attempt = handler.completed_attempts[0]
         assert attempt.gfe_latency_ns is None
 
+    @pytest.mark.skipif(
+        bool(os.environ.get(BIGTABLE_EMULATOR)), reason="not supported by emulator"
+    )
     def test_read_modify_write_failure_unauthorized(
         self, handler, authorized_view, cluster_config
     ):
@@ -542,6 +579,10 @@ class TestMetrics(SystemTestRunner):
             and attempt.gfe_latency_ns < operation.duration_ns
         )
 
+    @pytest.mark.skipif(
+        bool(os.environ.get(BIGTABLE_EMULATOR)),
+        reason="emulator doesn't suport cluster_config",
+    )
     def test_check_and_mutate_row(self, table, temp_rows, handler, cluster_config):
         from google.cloud.bigtable.data.mutations import SetCell
         from google.cloud.bigtable.data.row_filters import ValueRangeFilter
@@ -585,6 +626,9 @@ class TestMetrics(SystemTestRunner):
         )
         assert attempt.application_blocking_time_ns == 0
 
+    @pytest.mark.skipif(
+        bool(os.environ.get(BIGTABLE_EMULATOR)), reason="not supported by emulator"
+    )
     def test_check_and_mutate_row_failure_timeout(self, table, temp_rows, handler):
         """Test failure in gapic layer by passing very low timeout
 
@@ -617,6 +661,10 @@ class TestMetrics(SystemTestRunner):
         attempt = handler.completed_attempts[0]
         assert attempt.gfe_latency_ns is None
 
+    @pytest.mark.skipif(
+        bool(os.environ.get(BIGTABLE_EMULATOR)),
+        reason="emulator doesn't suport cluster_config",
+    )
     def test_check_and_mutate_row_failure_unauthorized(
         self, handler, authorized_view, cluster_config
     ):

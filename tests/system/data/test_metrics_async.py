@@ -27,6 +27,7 @@ from google.cloud.bigtable.data._metrics.data_model import (
     CompletedAttemptMetric,
 )
 from google.cloud.bigtable_v2.types import ResponseParams
+from google.cloud.environment_vars import BIGTABLE_EMULATOR
 
 from google.cloud.bigtable.data._cross_sync import CrossSync
 
@@ -223,6 +224,9 @@ class TestMetricsAsync(SystemTestRunner):
             table._metrics.add_handler(handler)
             yield table
 
+    @pytest.mark.skipif(
+        bool(os.environ.get(BIGTABLE_EMULATOR)), reason="emulator doesn't suport cluster_config"
+    )
     @CrossSync.pytest
     async def test_mutate_row(self, table, temp_rows, handler, cluster_config):
         row_key = b"mutate"
@@ -313,6 +317,9 @@ class TestMetricsAsync(SystemTestRunner):
         assert final_attempt.end_status.name == "PERMISSION_DENIED"
         assert final_attempt.gfe_latency_ns is None
 
+    @pytest.mark.skipif(
+        bool(os.environ.get(BIGTABLE_EMULATOR)), reason="not supported by emulator"
+    )
     @CrossSync.pytest
     async def test_mutate_row_failure_timeout(self, table, temp_rows, handler):
         """
@@ -345,6 +352,9 @@ class TestMetricsAsync(SystemTestRunner):
         assert attempt.end_status.name == "DEADLINE_EXCEEDED"
         assert attempt.gfe_latency_ns is None
 
+    @pytest.mark.skipif(
+        bool(os.environ.get(BIGTABLE_EMULATOR)), reason="emulator doesn't suport cluster_config"
+    )
     @CrossSync.pytest
     async def test_mutate_row_failure_unauthorized(
         self, handler, authorized_view, cluster_config
@@ -384,6 +394,9 @@ class TestMetricsAsync(SystemTestRunner):
             and attempt.gfe_latency_ns < operation.duration_ns
         )
 
+    @pytest.mark.skipif(
+        bool(os.environ.get(BIGTABLE_EMULATOR)), reason="emulator doesn't suport cluster_config"
+    )
     @CrossSync.pytest
     async def test_mutate_row_failure_unauthorized_with_retries(
         self, handler, authorized_view, cluster_config
@@ -423,6 +436,9 @@ class TestMetricsAsync(SystemTestRunner):
         for attempt in handler.completed_attempts:
             assert attempt.end_status.name in ["PERMISSION_DENIED", "DEADLINE_EXCEEDED"]
 
+    @pytest.mark.skipif(
+        bool(os.environ.get(BIGTABLE_EMULATOR)), reason="emulator doesn't suport cluster_config"
+    )
     @CrossSync.pytest
     async def test_sample_row_keys(self, table, temp_rows, handler, cluster_config):
         await table.sample_row_keys()
@@ -499,6 +515,10 @@ class TestMetricsAsync(SystemTestRunner):
         assert final_attempt.end_status.name == "UNKNOWN"
         assert final_attempt.gfe_latency_ns is None
 
+
+    @pytest.mark.skipif(
+        bool(os.environ.get(BIGTABLE_EMULATOR)), reason="emulator doesn't suport cluster_config"
+    )
     @CrossSync.pytest
     async def test_sample_row_keys_failure_with_retries(
         self, table, temp_rows, handler, error_injector, cluster_config
@@ -541,6 +561,9 @@ class TestMetricsAsync(SystemTestRunner):
             and final_attempt.gfe_latency_ns < operation.duration_ns
         )
 
+    @pytest.mark.skipif(
+        bool(os.environ.get(BIGTABLE_EMULATOR)), reason="not supported by emulator"
+    )
     @CrossSync.pytest
     async def test_sample_row_keys_failure_timeout(self, table, handler):
         """
@@ -596,6 +619,10 @@ class TestMetricsAsync(SystemTestRunner):
         final_attempt = handler.completed_attempts[-1]
         assert final_attempt.end_status.name == "PERMISSION_DENIED"
 
+
+    @pytest.mark.skipif(
+        bool(os.environ.get(BIGTABLE_EMULATOR)), reason="emulator doesn't suport cluster_config"
+    )
     @CrossSync.pytest
     async def test_read_modify_write(self, table, temp_rows, handler, cluster_config):
         from google.cloud.bigtable.data.read_modify_write_rules import IncrementRule
@@ -689,6 +716,9 @@ class TestMetricsAsync(SystemTestRunner):
         assert attempt.gfe_latency_ns is None
         assert attempt.application_blocking_time_ns == 0
 
+    @pytest.mark.skipif(
+        bool(os.environ.get(BIGTABLE_EMULATOR)), reason="not supported by emulator"
+    )
     @CrossSync.pytest
     async def test_read_modify_write_failure_timeout(self, table, temp_rows, handler):
         """
@@ -719,6 +749,9 @@ class TestMetricsAsync(SystemTestRunner):
         attempt = handler.completed_attempts[0]
         assert attempt.gfe_latency_ns is None
 
+    @pytest.mark.skipif(
+        bool(os.environ.get(BIGTABLE_EMULATOR)), reason="not supported by emulator"
+    )
     @CrossSync.pytest
     async def test_read_modify_write_failure_unauthorized(
         self, handler, authorized_view, cluster_config
@@ -753,6 +786,9 @@ class TestMetricsAsync(SystemTestRunner):
             and attempt.gfe_latency_ns < operation.duration_ns
         )
 
+    @pytest.mark.skipif(
+        bool(os.environ.get(BIGTABLE_EMULATOR)), reason="emulator doesn't suport cluster_config"
+    )
     @CrossSync.pytest
     async def test_check_and_mutate_row(
         self, table, temp_rows, handler, cluster_config
@@ -859,6 +895,9 @@ class TestMetricsAsync(SystemTestRunner):
         assert attempt.gfe_latency_ns is None
         assert attempt.application_blocking_time_ns == 0
 
+    @pytest.mark.skipif(
+        bool(os.environ.get(BIGTABLE_EMULATOR)), reason="not supported by emulator"
+    )
     @CrossSync.pytest
     async def test_check_and_mutate_row_failure_timeout(
         self, table, temp_rows, handler
@@ -900,6 +939,9 @@ class TestMetricsAsync(SystemTestRunner):
         attempt = handler.completed_attempts[0]
         assert attempt.gfe_latency_ns is None
 
+    @pytest.mark.skipif(
+        bool(os.environ.get(BIGTABLE_EMULATOR)), reason="emulator doesn't suport cluster_config"
+    )
     @CrossSync.pytest
     async def test_check_and_mutate_row_failure_unauthorized(
         self, handler, authorized_view, cluster_config
