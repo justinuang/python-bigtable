@@ -100,7 +100,7 @@ class BigtableAsyncClientMeta(type):
 
 
 
-class BigtableAsyncClient:
+class BigtableAsyncClient(metaclass=BigtableAsyncClientMeta):
     """Service for reading from and writing to existing Bigtable
     tables.
     """
