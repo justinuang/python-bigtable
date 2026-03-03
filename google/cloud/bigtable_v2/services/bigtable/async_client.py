@@ -65,6 +65,41 @@ except ImportError:  # pragma: NO COVER
 _LOGGER = std_logging.getLogger(__name__)
 
 
+class BigtableAsyncClientMeta(type):
+    """Metaclass for the Bigtable async client.
+
+    This provides class-level methods for building and retrieving
+    support objects (e.g. transport) without polluting the client instance
+    objects.
+    """
+
+    _transport_registry = OrderedDict()  # type: Dict[str, Type[BigtableTransport]]
+    _transport_registry["grpc_asyncio"] = BigtableGrpcAsyncIOTransport
+
+    def get_transport_class(
+        cls,
+        label: Optional[str] = None,
+    ) -> Type[BigtableTransport]:
+        """Returns an appropriate transport class.
+
+        Args:
+            label: The name of the desired transport. If none is
+                provided, then the first transport in the registry is used.
+
+        Returns:
+            The transport class to use.
+        """
+        # If a specific transport is requested, return that one.
+        if label:
+            return cls._transport_registry[label]
+
+        # No transport is requested; return the default (that is, the first one
+        # in the dictionary).
+        return next(iter(cls._transport_registry.values()))
+
+
+
+
 class BigtableAsyncClient:
     """Service for reading from and writing to existing Bigtable
     tables.
@@ -264,9 +299,10 @@ class BigtableAsyncClient:
             google.auth.exceptions.MutualTlsChannelError: If mutual TLS transport
                 creation failed for any reason.
         """
+        transport_cls = BigtableAsyncClient.get_transport_class(transport)
         self._client = BigtableClient(
             credentials=credentials,
-            transport=transport,
+            transport=transport_cls,
             client_options=client_options,
             client_info=client_info,
         )

@@ -82,7 +82,6 @@ class BigtableClientMeta(type):
 
     _transport_registry = OrderedDict()  # type: Dict[str, Type[BigtableTransport]]
     _transport_registry["grpc"] = BigtableGrpcTransport
-    _transport_registry["grpc_asyncio"] = BigtableGrpcAsyncIOTransport
     _transport_registry["rest"] = BigtableRestTransport
 
     def get_transport_class(
