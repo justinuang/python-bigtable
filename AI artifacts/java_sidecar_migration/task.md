@@ -1,0 +1,3 @@
+- [x] Create production read test file `tests/integration/test_production_read.py`.
+- [x] Run the test from a separate directory using the installed wheel.
+- [x] Verify results.

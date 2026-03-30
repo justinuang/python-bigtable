@@ -15,6 +15,9 @@
 
 from __future__ import annotations
 
+from google.cloud.bigtable.data._sidecar import SidecarManager
+
+
 from typing import (
     cast,
     Any,
@@ -191,11 +194,25 @@ class BigtableDataClientAsync(ClientWithProject):
         Raises:
             {RAISE_NO_LOOP}
         """
-        if "pool_size" in kwargs:
-            warnings.warn("pool_size no longer supported")
         # set up client info headers for veneer library
         self.client_info = DEFAULT_CLIENT_INFO
         self.client_info.client_library_version = self._client_version()
+        
+        use_sidecar = kwargs.pop("use_sidecar", False)
+        self._sidecar_client = None
+        if use_sidecar:
+            manager = SidecarManager()
+            socket_path = manager.start_sidecar()
+            self._sidecar_client = GapicClient(
+                credentials=credentials,
+                client_options=client_options,
+                client_info=self.client_info,
+                transport=lambda *args, **kwargs: TransportType(
+                    *args, **kwargs, channel=lambda target, **channel_kwargs: insecure_channel(f"unix:{socket_path}", options=channel_kwargs.get("options"))
+                ),
+            )
+
+
         # parse client options
         if type(client_options) is dict:
             client_options = client_options_lib.from_dict(client_options)
