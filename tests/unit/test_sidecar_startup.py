@@ -22,7 +22,7 @@ def test_sidecar_startup():
     
     try:
         print("Starting sidecar...")
-        socket_path = manager.start_sidecar("test-project", "test-instance")
+        socket_path = manager.start_sidecar()
         assert socket_path is not None
         assert os.path.exists(socket_path)
         print(f"Sidecar started successfully! Socket path: {socket_path}")
