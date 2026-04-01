@@ -50,7 +50,7 @@ def _get_metadata(source) -> dict[str, str | bytes] | None:
     try:
         metadata: Sequence[tuple[str, str | bytes]]
         metadata = source.trailing_metadata() + source.initial_metadata()
-        return {k: v for (k, v) in metadata}
+        return {k: v for k, v in metadata}
     except Exception:
         return None
 

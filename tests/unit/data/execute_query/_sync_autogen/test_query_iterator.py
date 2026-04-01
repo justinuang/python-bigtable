@@ -32,6 +32,7 @@ except ImportError:
 
 
 class MockIterator:
+
     def __init__(self, values, delay=None):
         self._values = values
         self.idx = 0
@@ -51,6 +52,7 @@ class MockIterator:
 
 
 class TestQueryIterator:
+
     @staticmethod
     def _target_class():
         return CrossSync._Sync_Impl.ExecuteQueryIterator
@@ -323,6 +325,7 @@ class TestQueryIterator:
         client_mock._remove_instance_registration = CrossSync._Sync_Impl.Mock()
 
         class MockErrorIterator(MockIterator):
+
             def __next__(self):
                 if self.idx >= 1:
                     raise ValueError("Injected-test-error")

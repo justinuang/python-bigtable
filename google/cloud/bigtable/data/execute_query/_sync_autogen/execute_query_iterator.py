@@ -54,6 +54,7 @@ def _has_resume_token(response: ExecuteQueryResponse) -> bool:
 
 
 class ExecuteQueryIterator:
+
     def __init__(
         self,
         client: DataClientType,

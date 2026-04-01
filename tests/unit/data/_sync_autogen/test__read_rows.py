@@ -166,12 +166,11 @@ class TestReadRowsOperation:
         next_key = (last_key + "a").encode("utf-8")
         last_key = last_key.encode("utf-8")
         in_ranges = [
-            RowRangePB(**{k: v.encode("utf-8") for (k, v) in r.items()})
+            RowRangePB(**{k: v.encode("utf-8") for k, v in r.items()})
             for r in in_ranges
         ]
         expected = [
-            RowRangePB(**{k: v.encode("utf-8") for (k, v) in r.items()})
-            for r in expected
+            RowRangePB(**{k: v.encode("utf-8") for k, v in r.items()}) for r in expected
         ]
         if with_key:
             row_keys = [next_key]
@@ -234,6 +233,7 @@ class TestReadRowsOperation:
         from google.cloud.bigtable_v2.types import ReadRowsResponse
 
         def awaitable_stream():
+
             def mock_stream():
                 for i in range(emit_num):
                     yield ReadRowsResponse(
@@ -269,6 +269,7 @@ class TestReadRowsOperation:
         from google.cloud.bigtable.data.exceptions import InvalidChunk
 
         def awaitable_stream():
+
             def mock_stream():
                 for i in range(emit_num):
                     yield ReadRowsResponse(
@@ -327,6 +328,7 @@ class TestReadRowsOperation:
         row_key = b"duplicate"
 
         def mock_awaitable_stream():
+
             def mock_stream():
                 while True:
                     yield ReadRowsResponse(

@@ -125,9 +125,14 @@ class _ReadRowsOperation:
             self.request.rows_limit = self._remaining_count
             if self._remaining_count == 0:
                 return self.merge_rows(None)
-        gapic_stream = self.target.client._gapic_client.read_rows(
-            self.request, timeout=next(self.attempt_timeout_gen), retry=None
-        )
+        if getattr(self.target.client, "_sidecar_client", None) is not None:
+            gapic_stream = self.target.client._sidecar_client.read_rows(
+                self.request, timeout=next(self.attempt_timeout_gen), retry=None
+            )
+        else:
+            gapic_stream = self.target.client._gapic_client.read_rows(
+                self.request, timeout=next(self.attempt_timeout_gen), retry=None
+            )
         chunked_stream = self.chunk_stream(gapic_stream)
         return self.merge_rows(chunked_stream)
 

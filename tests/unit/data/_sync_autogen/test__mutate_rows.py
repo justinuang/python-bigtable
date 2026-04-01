@@ -31,6 +31,7 @@ except ImportError:
 
 
 class TestMutateRowsOperation:
+
     def _target_class(self):
         return CrossSync._Sync_Impl._MutateRowsOperation
 
@@ -259,7 +260,7 @@ class TestMutateRowsOperation:
             instance._run_attempt()
         assert len(instance.remaining_indices) == 0
         assert mock_gapic_fn.call_count == 1
-        (_, kwargs) = mock_gapic_fn.call_args
+        _, kwargs = mock_gapic_fn.call_args
         assert kwargs["timeout"] == expected_timeout
         request = kwargs["request"]
         assert request.entries == [mutation._to_pb()]

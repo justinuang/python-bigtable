@@ -130,8 +130,7 @@ class _MutateRowsOperation:
             GoogleAPICallError: if the gapic rpc fails"""
         request_entries = [self.mutations[idx].proto for idx in self.remaining_indices]
         active_request_indices = {
-            req_idx: orig_idx
-            for (req_idx, orig_idx) in enumerate(self.remaining_indices)
+            req_idx: orig_idx for req_idx, orig_idx in enumerate(self.remaining_indices)
         }
         self.remaining_indices = []
         if not request_entries:

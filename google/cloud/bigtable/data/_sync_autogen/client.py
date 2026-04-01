@@ -105,14 +105,15 @@ if TYPE_CHECKING:
 
 @CrossSync._Sync_Impl.add_mapping_decorator("DataClient")
 class BigtableDataClient(ClientWithProject):
+
     def __init__(
         self,
         *,
         project: str | None = None,
         credentials: google.auth.credentials.Credentials | None = None,
-        client_options: dict[str, Any]
-        | "google.api_core.client_options.ClientOptions"
-        | None = None,
+        client_options: (
+            dict[str, Any] | "google.api_core.client_options.ClientOptions" | None
+        ) = None,
         **kwargs,
     ):
         """Create a client instance for the Bigtable Data API
@@ -310,7 +311,7 @@ class BigtableDataClient(ClientWithProject):
                 ],
                 wait_for_ready=True,
             )
-            for (instance_name, app_profile_id) in instance_list
+            for instance_name, app_profile_id in instance_list
         ]
         result_list = CrossSync._Sync_Impl.gather_partials(
             partial_list, return_exceptions=True, sync_executor=self._executor
@@ -659,7 +660,7 @@ class BigtableDataClient(ClientWithProject):
         prepare_predicate = retries.if_exception_type(
             *[_get_error_type(e) for e in prepare_retryable_errors]
         )
-        (prepare_operation_timeout, prepare_attempt_timeout) = _align_timeouts(
+        prepare_operation_timeout, prepare_attempt_timeout = _align_timeouts(
             prepare_operation_timeout, prepare_attempt_timeout
         )
         prepare_sleep_generator = retries.exponential_sleep_generator(0.01, 2, 60)
@@ -685,7 +686,7 @@ class BigtableDataClient(ClientWithProject):
             "prepared_query": prepare_result.prepared_query,
             "params": pb_params,
         }
-        (operation_timeout, attempt_timeout) = _align_timeouts(
+        operation_timeout, attempt_timeout = _align_timeouts(
             operation_timeout, attempt_timeout
         )
         return CrossSync._Sync_Impl.ExecuteQueryIterator(
@@ -857,8 +858,9 @@ class _DataApiTarget(abc.ABC):
         *,
         operation_timeout: float | TABLE_DEFAULT = TABLE_DEFAULT.READ_ROWS,
         attempt_timeout: float | None | TABLE_DEFAULT = TABLE_DEFAULT.READ_ROWS,
-        retryable_errors: Sequence[type[Exception]]
-        | TABLE_DEFAULT = TABLE_DEFAULT.READ_ROWS,
+        retryable_errors: (
+            Sequence[type[Exception]] | TABLE_DEFAULT
+        ) = TABLE_DEFAULT.READ_ROWS,
     ) -> Iterable[Row]:
         """Read a set of rows from the table, based on the specified query.
         Returns an iterator to asynchronously stream back row data.
@@ -886,7 +888,7 @@ class _DataApiTarget(abc.ABC):
                 from any retries that failed
             google.api_core.exceptions.GoogleAPIError: raised if the request encounters an unrecoverable error
         """
-        (operation_timeout, attempt_timeout) = _get_timeouts(
+        operation_timeout, attempt_timeout = _get_timeouts(
             operation_timeout, attempt_timeout, self
         )
         retryable_excs = _get_retryable_errors(retryable_errors, self)
@@ -905,8 +907,9 @@ class _DataApiTarget(abc.ABC):
         *,
         operation_timeout: float | TABLE_DEFAULT = TABLE_DEFAULT.READ_ROWS,
         attempt_timeout: float | None | TABLE_DEFAULT = TABLE_DEFAULT.READ_ROWS,
-        retryable_errors: Sequence[type[Exception]]
-        | TABLE_DEFAULT = TABLE_DEFAULT.READ_ROWS,
+        retryable_errors: (
+            Sequence[type[Exception]] | TABLE_DEFAULT
+        ) = TABLE_DEFAULT.READ_ROWS,
     ) -> list[Row]:
         """Read a set of rows from the table, based on the specified query.
         Retruns results as a list of Row objects when the request is complete.
@@ -952,8 +955,9 @@ class _DataApiTarget(abc.ABC):
         row_filter: RowFilter | None = None,
         operation_timeout: float | TABLE_DEFAULT = TABLE_DEFAULT.READ_ROWS,
         attempt_timeout: float | None | TABLE_DEFAULT = TABLE_DEFAULT.READ_ROWS,
-        retryable_errors: Sequence[type[Exception]]
-        | TABLE_DEFAULT = TABLE_DEFAULT.READ_ROWS,
+        retryable_errors: (
+            Sequence[type[Exception]] | TABLE_DEFAULT
+        ) = TABLE_DEFAULT.READ_ROWS,
     ) -> Row | None:
         """Read a single row from the table, based on the specified key.
 
@@ -999,8 +1003,9 @@ class _DataApiTarget(abc.ABC):
         *,
         operation_timeout: float | TABLE_DEFAULT = TABLE_DEFAULT.READ_ROWS,
         attempt_timeout: float | None | TABLE_DEFAULT = TABLE_DEFAULT.READ_ROWS,
-        retryable_errors: Sequence[type[Exception]]
-        | TABLE_DEFAULT = TABLE_DEFAULT.READ_ROWS,
+        retryable_errors: (
+            Sequence[type[Exception]] | TABLE_DEFAULT
+        ) = TABLE_DEFAULT.READ_ROWS,
     ) -> list[Row]:
         """Runs a sharded query in parallel, then return the results in a single list.
         Results will be returned in the order of the input queries.
@@ -1032,7 +1037,7 @@ class _DataApiTarget(abc.ABC):
             ValueError: if the query_list is empty"""
         if not sharded_query:
             raise ValueError("empty sharded_query")
-        (operation_timeout, attempt_timeout) = _get_timeouts(
+        operation_timeout, attempt_timeout = _get_timeouts(
             operation_timeout, attempt_timeout, self
         )
         rpc_timeout_generator = _attempt_timeout_generator(
@@ -1075,7 +1080,7 @@ class _DataApiTarget(abc.ABC):
             raise ShardedReadRowsExceptionGroup(
                 [
                     FailedQueryShardError(idx, sharded_query[idx], e)
-                    for (idx, e) in error_dict.items()
+                    for idx, e in error_dict.items()
                 ],
                 results_list,
                 len(sharded_query),
@@ -1088,8 +1093,9 @@ class _DataApiTarget(abc.ABC):
         *,
         operation_timeout: float | TABLE_DEFAULT = TABLE_DEFAULT.READ_ROWS,
         attempt_timeout: float | None | TABLE_DEFAULT = TABLE_DEFAULT.READ_ROWS,
-        retryable_errors: Sequence[type[Exception]]
-        | TABLE_DEFAULT = TABLE_DEFAULT.READ_ROWS,
+        retryable_errors: (
+            Sequence[type[Exception]] | TABLE_DEFAULT
+        ) = TABLE_DEFAULT.READ_ROWS,
     ) -> bool:
         """Return a boolean indicating whether the specified row exists in the table.
         uses the filters: chain(limit cells per row = 1, strip value)
@@ -1133,8 +1139,9 @@ class _DataApiTarget(abc.ABC):
         *,
         operation_timeout: float | TABLE_DEFAULT = TABLE_DEFAULT.DEFAULT,
         attempt_timeout: float | None | TABLE_DEFAULT = TABLE_DEFAULT.DEFAULT,
-        retryable_errors: Sequence[type[Exception]]
-        | TABLE_DEFAULT = TABLE_DEFAULT.DEFAULT,
+        retryable_errors: (
+            Sequence[type[Exception]] | TABLE_DEFAULT
+        ) = TABLE_DEFAULT.DEFAULT,
     ) -> RowKeySamples:
         """Return a set of RowKeySamples that delimit contiguous sections of the table of
         approximately equal size
@@ -1165,7 +1172,7 @@ class _DataApiTarget(abc.ABC):
                 from any retries that failed
             google.api_core.exceptions.GoogleAPIError: raised if the request encounters an unrecoverable error
         """
-        (operation_timeout, attempt_timeout) = _get_timeouts(
+        operation_timeout, attempt_timeout = _get_timeouts(
             operation_timeout, attempt_timeout, self
         )
         attempt_timeout_gen = _attempt_timeout_generator(
@@ -1203,8 +1210,9 @@ class _DataApiTarget(abc.ABC):
         flow_control_max_bytes: int = 100 * _MB_SIZE,
         batch_operation_timeout: float | TABLE_DEFAULT = TABLE_DEFAULT.MUTATE_ROWS,
         batch_attempt_timeout: float | None | TABLE_DEFAULT = TABLE_DEFAULT.MUTATE_ROWS,
-        batch_retryable_errors: Sequence[type[Exception]]
-        | TABLE_DEFAULT = TABLE_DEFAULT.MUTATE_ROWS,
+        batch_retryable_errors: (
+            Sequence[type[Exception]] | TABLE_DEFAULT
+        ) = TABLE_DEFAULT.MUTATE_ROWS,
     ) -> "MutationsBatcher":
         """Returns a new mutations batcher instance.
 
@@ -1248,8 +1256,9 @@ class _DataApiTarget(abc.ABC):
         *,
         operation_timeout: float | TABLE_DEFAULT = TABLE_DEFAULT.DEFAULT,
         attempt_timeout: float | None | TABLE_DEFAULT = TABLE_DEFAULT.DEFAULT,
-        retryable_errors: Sequence[type[Exception]]
-        | TABLE_DEFAULT = TABLE_DEFAULT.DEFAULT,
+        retryable_errors: (
+            Sequence[type[Exception]] | TABLE_DEFAULT
+        ) = TABLE_DEFAULT.DEFAULT,
     ):
         """Mutates a row atomically.
 
@@ -1280,7 +1289,7 @@ class _DataApiTarget(abc.ABC):
             google.api_core.exceptions.GoogleAPIError: raised on non-idempotent operations that cannot be
                 safely retried.
             ValueError: if invalid arguments are provided"""
-        (operation_timeout, attempt_timeout) = _get_timeouts(
+        operation_timeout, attempt_timeout = _get_timeouts(
             operation_timeout, attempt_timeout, self
         )
         if not mutations:
@@ -1296,9 +1305,9 @@ class _DataApiTarget(abc.ABC):
         target = partial(
             self.client._gapic_client.mutate_row,
             request=MutateRowRequest(
-                row_key=row_key.encode("utf-8")
-                if isinstance(row_key, str)
-                else row_key,
+                row_key=(
+                    row_key.encode("utf-8") if isinstance(row_key, str) else row_key
+                ),
                 mutations=[mutation._to_pb() for mutation in mutations_list],
                 app_profile_id=self.app_profile_id,
                 **self._request_path,
@@ -1320,8 +1329,9 @@ class _DataApiTarget(abc.ABC):
         *,
         operation_timeout: float | TABLE_DEFAULT = TABLE_DEFAULT.MUTATE_ROWS,
         attempt_timeout: float | None | TABLE_DEFAULT = TABLE_DEFAULT.MUTATE_ROWS,
-        retryable_errors: Sequence[type[Exception]]
-        | TABLE_DEFAULT = TABLE_DEFAULT.MUTATE_ROWS,
+        retryable_errors: (
+            Sequence[type[Exception]] | TABLE_DEFAULT
+        ) = TABLE_DEFAULT.MUTATE_ROWS,
     ):
         """Applies mutations for multiple rows in a single batched request.
 
@@ -1352,7 +1362,7 @@ class _DataApiTarget(abc.ABC):
             MutationsExceptionGroup: if one or more mutations fails
                 Contains details about any failed entries in .exceptions
             ValueError: if invalid arguments are provided"""
-        (operation_timeout, attempt_timeout) = _get_timeouts(
+        operation_timeout, attempt_timeout = _get_timeouts(
             operation_timeout, attempt_timeout, self
         )
         retryable_excs = _get_retryable_errors(retryable_errors, self)
@@ -1405,7 +1415,7 @@ class _DataApiTarget(abc.ABC):
             bool indicating whether the predicate was true or false
         Raises:
             google.api_core.exceptions.GoogleAPIError: exceptions from grpc call"""
-        (operation_timeout, _) = _get_timeouts(operation_timeout, None, self)
+        operation_timeout, _ = _get_timeouts(operation_timeout, None, self)
         if true_case_mutations is not None and (
             not isinstance(true_case_mutations, list)
         ):
@@ -1421,9 +1431,9 @@ class _DataApiTarget(abc.ABC):
                 true_mutations=true_case_list,
                 false_mutations=false_case_list,
                 predicate_filter=predicate._to_pb() if predicate is not None else None,
-                row_key=row_key.encode("utf-8")
-                if isinstance(row_key, str)
-                else row_key,
+                row_key=(
+                    row_key.encode("utf-8") if isinstance(row_key, str) else row_key
+                ),
                 app_profile_id=self.app_profile_id,
                 **self._request_path,
             ),
@@ -1460,7 +1470,7 @@ class _DataApiTarget(abc.ABC):
         Raises:
             google.api_core.exceptions.GoogleAPIError: exceptions from grpc call
             ValueError: if invalid arguments are provided"""
-        (operation_timeout, _) = _get_timeouts(operation_timeout, None, self)
+        operation_timeout, _ = _get_timeouts(operation_timeout, None, self)
         if operation_timeout <= 0:
             raise ValueError("operation_timeout must be greater than 0")
         if rules is not None and (not isinstance(rules, list)):
@@ -1470,9 +1480,9 @@ class _DataApiTarget(abc.ABC):
         result = self.client._gapic_client.read_modify_write_row(
             request=ReadModifyWriteRowRequest(
                 rules=[rule._to_pb() for rule in rules],
-                row_key=row_key.encode("utf-8")
-                if isinstance(row_key, str)
-                else row_key,
+                row_key=(
+                    row_key.encode("utf-8") if isinstance(row_key, str) else row_key
+                ),
                 app_profile_id=self.app_profile_id,
                 **self._request_path,
             ),

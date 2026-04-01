@@ -46,6 +46,7 @@ def _make_mock_stream_call(values, exc=None):
 
 
 class TestMetricsInterceptor:
+
     @staticmethod
     def _get_target_class():
         return BigtableMetricsInterceptor

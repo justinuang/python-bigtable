@@ -17,6 +17,7 @@
 """
 This module contains the client handler process for proxy_server.py.
 """
+
 import os
 from google.cloud.environment_vars import BIGTABLE_EMULATOR
 from google.cloud.bigtable.data._cross_sync import CrossSync
@@ -190,9 +191,7 @@ class TestProxyClientHandler:
         app_profile_id = self.app_profile_id or request.get("app_profile_id", None)
         query = request.get("query")
         params = request.get("params") or {}
-        (formatted_params, parameter_types) = sql_encoding_helpers.convert_params(
-            params
-        )
+        formatted_params, parameter_types = sql_encoding_helpers.convert_params(params)
         operation_timeout = (
             kwargs.get("operation_timeout", self.per_operation_timeout) or 20
         )

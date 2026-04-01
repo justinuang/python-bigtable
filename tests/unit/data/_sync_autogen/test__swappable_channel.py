@@ -28,6 +28,7 @@ from google.cloud.bigtable.data._sync_autogen._swappable_channel import (
 
 
 class TestSwappableChannel:
+
     @staticmethod
     def _get_target_class():
         return TargetType
@@ -86,6 +87,7 @@ class TestSwappableChannel:
         ],
     )
     def test_forwarded_async_methods(self, method_name, args, kwargs):
+
         def dummy_coro(*a, **k):
             return mock.sentinel.result
 
