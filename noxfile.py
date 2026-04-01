@@ -228,8 +228,7 @@ def unit(session, protobuf_implementation):
         "--cov-config=.coveragerc",
         "--cov-report=",
         "--cov-fail-under=0",
-        os.path.join("tests", "unit"),
-        *session.posargs,
+        *(session.posargs if session.posargs else [os.path.join("tests", "unit")]),
         env={
             "PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION": protobuf_implementation,
         },
