@@ -29,9 +29,27 @@ The work for this integration is currently available in the following forks on t
 
 ## How the Build System Works
 
-The Java sidecar is built in the `google-cloud-bigtable-sidecar` directory (Maven project). The resulting shaded JAR is copied into the Python project at `google/cloud/bigtable/bin/java-sidecar.jar`.
+The Java sidecar is built in the `google-cloud-bigtable-sidecar` directory (Maven project). The resulting shaded JAR must be copied into the Python project at `google/cloud/bigtable/bin/java-sidecar.jar`.
 
 When you build the Python wheel (`python3 setup.py bdist_wheel`), this JAR is included in the package.
+
+### How to Build and Copy the Sidecar JAR
+
+If you need to build the sidecar JAR from source (e.g., if it is missing or you made changes in the Java repo):
+
+1.  **Build the JAR** in the `java-bigtable` repository:
+    ```bash
+    # Ensure you are on the sidecar branch
+    git checkout sidecar
+    
+    cd google-cloud-bigtable-sidecar
+    mvn clean package
+    ```
+2.  **Copy the JAR** to the specific location in the `python-bigtable` repository:
+    ```bash
+    cp target/java-sidecar-1.0-SNAPSHOT.jar ../python-bigtable/google/cloud/bigtable/bin/java-sidecar.jar
+    ```
+    *(Adjust the relative path to `python-bigtable` as necessary depending on where your repositories are cloned).*
 
 > [!IMPORTANT]
 > The Python package **does not** bundle a JVM. It relies on the host system having a compatible Java runtime installed to execute the sidecar JAR.
