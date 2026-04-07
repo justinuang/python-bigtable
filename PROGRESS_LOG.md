@@ -7,7 +7,7 @@ This file tracks the execution and results of experiments for the Python Bigtabl
 - [x] Verify script on small scale
 - [x] Run baseline 5-minute benchmark without sidecar (Actually 2-minute run for verification)
 - [x] Run benchmark with sidecar (CloudPath)
-- [ ] Run benchmark with sidecar (DirectPath) - Future
+- [x] Run benchmark with sidecar (DirectPath) - Future
 
 ## Phase 1: Verification Run (Small Scale)
 
@@ -102,3 +102,18 @@ The Java Sidecar dramatically reduced latency across all percentiles. The p99 la
 
 ### Analysis
 Adding `uvloop` significantly improved performance across all configurations at 500 QPS. For Jetstream, p99 latency dropped from 4.58 ms to 3.48 ms, bringing it extremely close to the Ruby baseline of 3.25 ms. The native client ("No Sidecar") also saw substantial improvements, confirming that event loop overhead is a major factor in Python client latency.
+
+## Wheel Size & Packaging
+
+**Date:** 2026-04-07
+- **Final Wheel Size**: **46.4 MB** (compressed)
+- **Included Artifacts**: Contains `google/cloud/bigtable/bin/java-sidecar.jar` (uncompressed size: **49.4 MB**).
+- **Note**: Does **not** contain a bundled JVM. Requires system Java to run.
+
+## Future Tasks
+
+Here are the planned future tasks for the Sidecar and Jetstream integration:
+
+- [ ] **Bundle a J-Link JVM**: Include a custom lightweight JVM in the wheel to remove the dependency on a pre-installed Java runtime on the host system.
+- [ ] **Propagate Cancellations and Deadlines**: Ensure that when the Python client cancels a call or hits a deadline, that signal is forwarded to the Java sidecar to free up resources.
+- [ ] **Support MutateRows in Jetstream**: Expand Jetstream support to handle mutation operations (currently it is read-only).
