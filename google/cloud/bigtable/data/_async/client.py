@@ -199,6 +199,8 @@ class BigtableDataClientAsync(ClientWithProject):
         self.client_info.client_library_version = self._client_version()
         
         use_sidecar = kwargs.pop("use_sidecar", False)
+        use_jetstream = kwargs.pop("use_jetstream", False)
+        self._use_jetstream = use_jetstream
         self._sidecar_client = None
         if use_sidecar:
             manager = SidecarManager()

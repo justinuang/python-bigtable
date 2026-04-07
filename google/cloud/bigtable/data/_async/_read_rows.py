@@ -145,10 +145,14 @@ class _ReadRowsOperationAsync:
                 return self.merge_rows(None)
         # create and return a new row merger
         if getattr(self.target.client, "_sidecar_client", None) is not None:
+            metadata = []
+            if getattr(self.target.client, "_use_jetstream", False):
+                metadata.append(("x-use-jetstream", "true"))
             gapic_stream = self.target.client._sidecar_client.read_rows(
                 self.request,
                 timeout=next(self.attempt_timeout_gen),
                 retry=None,
+                metadata=metadata,
             )
         else:
             gapic_stream = self.target.client._gapic_client.read_rows(
