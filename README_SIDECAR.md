@@ -85,6 +85,14 @@ nox -f noxfile_benchmark.py -s benchmark
 ```
 This command will automatically clean the workspace, build the wheel, upload it to the VM, and run the benchmark configurations (Sidecar, No Sidecar, Jetstream).
 
+## Running Unit Tests
+
+To run the unit tests specifically for the sidecar startup behavior:
+```bash
+nox -s unit-3.13 -- tests/unit/test_sidecar_startup.py
+```
+This will run the tests against Python 3.13 for both `python` and `upb` protobuf implementations.
+
 ## Environment Details
 
 For our testing and benchmarking, we used the following environment:
