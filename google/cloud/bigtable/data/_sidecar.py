@@ -51,7 +51,11 @@ class SidecarManager:
         jar_path = os.path.join(current_dir, "..", "bin", "java-sidecar.jar")
         
         if not os.path.exists(jar_path):
-            raise FileNotFoundError(f"Sidecar JAR not found at {jar_path}")
+            raise FileNotFoundError(
+                f"Sidecar JAR not found at {jar_path}. "
+                "Please build the Java sidecar project and copy the shaded JAR to this location before running. "
+                "See README_SIDECAR.md for details."
+            )
 
         # Create temp dir for socket and FIFO
         self._tmp_dir = tempfile.mkdtemp(prefix="bigtable-sidecar-")

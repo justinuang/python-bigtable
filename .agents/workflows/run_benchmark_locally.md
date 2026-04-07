@@ -1,8 +1,8 @@
 ---
-description: Run YCSB benchmark and record results in PROGRESS_LOG.md
+description: Run YCSB benchmark locally and record results in PROGRESS_LOG.md
 ---
 
-# Run and Record Benchmark Workflow
+# Run Benchmark Locally
 
 Follow this workflow to run a YCSB benchmark experiment and record the results.
 
@@ -11,8 +11,9 @@ Follow this workflow to run a YCSB benchmark experiment and record the results.
 1.  **Clarify Intent**: Ask the user for the intention of this experiment and if there are any specific code changes or environment variables they want to test.
 2.  **Run Benchmark**:
     -   Execute the benchmark script with the desired parameters.
-    -   Default command for full run: `.venv/bin/python scripts/ycsb_benchmark.py`
-    -   Add `--use-sidecar` if testing the sidecar path.
+    -   Default command: `nox -f noxfile_benchmark.py -s local_benchmark`
+    -   To pass arguments to the script, use `--` followed by the arguments.
+        Example: `nox -f noxfile_benchmark.py -s local_benchmark -- --use-sidecar`
     -   Set `BIGTABLE_SIDECAR_DISABLE_DIRECTPATH=true` if DirectPath should be disabled.
     -   > [!TIP]
     -   > You can run comparison experiments concurrently in the background (using `&` in bash) to save time, provided the machine has sufficient CPU and memory to avoid artificial bottlenecks.

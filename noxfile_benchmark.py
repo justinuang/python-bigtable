@@ -58,3 +58,10 @@ def benchmark(session):
         f"--command={remote_commands}",
         external=True
     )
+
+@nox.session(python="3.13")
+def local_benchmark(session):
+    """Run YCSB benchmark locally."""
+    session.install("uvloop", "--extra-index-url", "https://pypi.org/simple")
+    session.install("-e", ".", "--extra-index-url", "https://pypi.org/simple")
+    session.run("python", "scripts/ycsb_benchmark.py", *session.posargs)

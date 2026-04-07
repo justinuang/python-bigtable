@@ -69,6 +69,15 @@ packages = [
     if package.startswith("google")
 ]
 
+# Verify that the sidecar JAR exists
+jar_path = os.path.join(package_root, "google/cloud/bigtable/bin/java-sidecar.jar")
+if not os.path.exists(jar_path):
+    raise RuntimeError(
+        "Sidecar JAR not found at google/cloud/bigtable/bin/java-sidecar.jar. "
+        "Please build the Java sidecar project and copy the shaded JAR to this location before building the wheel. "
+        "See README_SIDECAR.md for details."
+    )
+
 setuptools.setup(
     name=name,
     version=version,
